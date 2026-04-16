@@ -18,4 +18,14 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules/lucide-react')) return 'lucide';
+          if (id.includes('node_modules/pdfjs-dist')) return 'pdf';
+        }
+      }
+    }
+  }
 }));

@@ -1,7 +1,10 @@
-import * as pdfjsLib from "pdfjs-dist";
 import type { ParsedQuote, WarrantyRepairLine, ClaimPartLine, ClaimVehicleInfo } from "./types";
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+async function getPdfJs() {
+  const pdfjsLib = await import("pdfjs-dist");
+  (pdfjsLib as any).GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${(pdfjsLib as any).version}/pdf.worker.min.js`;
+  return pdfjsLib as any;
+}
 
 interface TextItem {
   str: string;
@@ -10,6 +13,7 @@ interface TextItem {
 }
 
 async function extractTextItems(file: File): Promise<{ items: TextItem[]; lines: string[] }> {
+  const pdfjsLib = await getPdfJs();
   const arrayBuffer = await file.arrayBuffer();
   const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
   const allItems: TextItem[] = [];

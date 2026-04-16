@@ -1,9 +1,13 @@
-import * as pdfjsLib from "pdfjs-dist";
 import type { ParsedBackPage } from "./types";
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+async function getPdfJs() {
+  const pdfjsLib = await import("pdfjs-dist");
+  (pdfjsLib as any).GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${(pdfjsLib as any).version}/pdf.worker.min.js`;
+  return pdfjsLib as any;
+}
 
 async function extractText(file: File): Promise<string> {
+  const pdfjsLib = await getPdfJs();
   const arrayBuffer = await file.arrayBuffer();
   const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
   let text = "";
